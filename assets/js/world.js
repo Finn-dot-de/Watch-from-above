@@ -79,7 +79,7 @@ export function spawnTrees() {
             if (state.map[ry][rx] === 0 && !(rx === state.player.x && ry === state.player.y)) {
                 state.map[ry][rx] = 3; 
                 spawned = true; 
-                draw(); // Sofort neu zeichnen, wenn ein Baum gewachsen ist
+                draw();
             }
             attempts++;
         }
