@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini-Minecraft</title>
+    <link rel="stylesheet" href="assets/style/style.css">
+</head>
+<body>
+    <h1>Mini-Minecraft</h1>
+    
+    <div class="game-container">
+        <canvas id="gameCanvas" width="480" height="480"></canvas>
+        
+        <div id="inventoryUI" class="hidden">
+            <h2>Rucksack</h2>
+            <p>Holz: <span id="woodCount">0</span></p>
+            <p>Stein: <span id="stoneCount">0</span></p>
+            <hr>
+            <p>Eisen: <span id="ironCount">0</span></p>
+            <p>Kupfer: <span id="copperCount">0</span></p>
+            <p>Gold: <span id="goldCount">0</span></p>
+            <p>Diamant: <span id="diamondCount">0</span></p>
+            <hr>
+            <p>Hacke: <span id="pickaxeTier">Keine</span></p>
+            
+            <h2>Crafting</h2>
+            <button id="craftWoodBtn">Holz-Hacke (5 Holz)</button>
+            <button id="craftStoneBtn">Stein-Hacke (10 Stein, 2 Holz)</button>
+        </div>
+    </div>
+    
+    <p>Steuerung: WASD | Abbauen: B | Platzieren: P | Inventar: E</p>
+
+    <script type="module" src="assets/js/main.js"></script>
+</body>
+</html>
