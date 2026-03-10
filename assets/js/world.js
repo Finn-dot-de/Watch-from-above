@@ -68,7 +68,7 @@ export function spawnTrees() {
         }
     }
     
-    if (currentTreeCount < 5) {
+    if (currentTreeCount < 2) {
         let spawned = false; 
         let attempts = 0;
         
