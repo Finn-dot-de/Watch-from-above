@@ -12,7 +12,7 @@ export const state = {
         [1,0,0,0,0,0,0,0,4,2,2,0,0,0,1],
         [1,0,0,0,0,0,0,0,0,0,0,0,3,0,1],
         [1,0,0,1,1,0,0,0,0,0,0,0,0,0,1],
-        [1,0,0,1,1,0,0,0,0,0,0,0,0,0,1],
+        [1,0,0,1,1,0,0,3,0,0,0,0,0,0,1],
         [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
         [1,0,0,0,0,0,0,0,0,3,0,0,0,0,1],
         [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
@@ -28,7 +28,7 @@ export const state = {
         x: 7, 
         y: 7,
         color: '#ff5555',
-        direction: 'down', // 'up', 'down', 'left', 'right'
+        direction: 'down',
         inventory: {
             wood: 0,
             stone: 0,
@@ -36,7 +36,15 @@ export const state = {
             copper: 0,
             gold: 0,
             diamond: 0,
-            pickaxeTier: 0 // 0 = Keine, 1 = Holz, 2 = Stein
+            pickaxeTier: 0
+        },
+        discovered: {
+            wood: false,
+            stone: false,
+            iron: false,
+            copper: false,
+            gold: false,
+            diamond: false
         },
         isInventoryOpen: false
     }

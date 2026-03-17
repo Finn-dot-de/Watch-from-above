@@ -14,14 +14,22 @@ export function mineBlock() {
     let baseTargetX = p.x; 
     let baseTargetY = p.y;
     
+    // Den Haupt-Zielblock bestimmen
     if (p.direction === 'up') baseTargetY--; 
     if (p.direction === 'down') baseTargetY++;
     if (p.direction === 'left') baseTargetX--; 
     if (p.direction === 'right') baseTargetX++;
 
     let targets = [];
-    
-    if (p.inventory.pickaxeTier === 2) {
+    const tier = p.inventory.pickaxeTier;
+
+    // --- NEUE BEREICHS-LOGIK FÜR DIE UPGRADES ---
+    if (tier <= 1) { 
+        // Tier 0 & 1 (Keine / Holz): Genau 1 Block
+        targets.push({x: baseTargetX, y: baseTargetY});
+    } 
+    else if (tier === 2) { 
+        // Tier 2 (Stein): 3 Blöcke in einer Linie (quer zur Blickrichtung)
         if (p.direction === 'up' || p.direction === 'down') {
             targets.push({x: baseTargetX - 1, y: baseTargetY}); 
             targets.push({x: baseTargetX, y: baseTargetY}); 
@@ -31,24 +39,58 @@ export function mineBlock() {
             targets.push({x: baseTargetX, y: baseTargetY}); 
             targets.push({x: baseTargetX, y: baseTargetY + 1});
         }
-    } else {
+    } 
+    else if (tier === 3) {
+        // Tier 3 (Kupfer): Ein Plus-Zeichen (5 Blöcke)
         targets.push({x: baseTargetX, y: baseTargetY});
+        targets.push({x: baseTargetX - 1, y: baseTargetY});
+        targets.push({x: baseTargetX + 1, y: baseTargetY});
+        targets.push({x: baseTargetX, y: baseTargetY - 1});
+        targets.push({x: baseTargetX, y: baseTargetY + 1});
+    }
+    else if (tier === 4 || tier === 5) {
+        // Tier 4 & 5 (Eisen / Gold): 3x3 Quadrat
+        for (let dy = -1; dy <= 1; dy++) {
+            for (let dx = -1; dx <= 1; dx++) {
+                targets.push({x: baseTargetX + dx, y: baseTargetY + dy});
+            }
+        }
+        // Gold bekommt noch extra Reichweite nach vorne (als Bonus)
+        if (tier === 5) {
+            if (p.direction === 'up') targets.push({x: baseTargetX, y: baseTargetY - 2});
+            if (p.direction === 'down') targets.push({x: baseTargetX, y: baseTargetY + 2});
+            if (p.direction === 'left') targets.push({x: baseTargetX - 2, y: baseTargetY});
+            if (p.direction === 'right') targets.push({x: baseTargetX + 2, y: baseTargetY});
+        }
+    }
+    else if (tier >= 6) {
+        // Tier 6 (Diamant): Riesiges 5x5 Quadrat
+        for (let dy = -2; dy <= 2; dy++) {
+            for (let dx = -2; dx <= 2; dx++) {
+                targets.push({x: baseTargetX + dx, y: baseTargetY + dy});
+            }
+        }
     }
 
     let pinkBlockMined = false;
 
+    // --- ABBAU-AUSFÜHRUNG FÜR ALLE MARKIERTEN BLÖCKE ---
     targets.forEach(t => {
+        // SICHERHEIT: Der Spieler darf nicht den Block abbauen, auf dem er gerade selbst steht
+        if (t.x === p.x && t.y === p.y) return;
+
+        // Prüfen, ob der Block innerhalb der Kartengrenzen liegt
         if (t.x >= 0 && t.x < state.map[0].length && t.y >= 0 && t.y < state.map.length) {
             const tile = state.map[t.y][t.x];
             
-            if (tile === 3) { state.map[t.y][t.x] = 0; p.inventory.wood++; } 
-            else if (tile === 5) { state.map[t.y][t.x] = 2; p.inventory.wood++; }
-            else if (tile === 1 && p.inventory.pickaxeTier >= 1) { state.map[t.y][t.x] = 0; p.inventory.stone++; } 
+            if (tile === 3) { state.map[t.y][t.x] = 0; p.inventory.wood++; p.discovered.wood = true; } 
+            else if (tile === 5) { state.map[t.y][t.x] = 2; p.inventory.wood++; p.discovered.wood = true; }
+            else if (tile === 1 && p.inventory.pickaxeTier >= 1) { state.map[t.y][t.x] = 0; p.inventory.stone++; p.discovered.stone = true; } 
             else if (tile === 6 && p.inventory.pickaxeTier >= 1) { state.map[t.y][t.x] = 0; pinkBlockMined = true; }
-            else if (tile === 7 && p.inventory.pickaxeTier >= 2) { state.map[t.y][t.x] = 0; p.inventory.iron++; }
-            else if (tile === 8 && p.inventory.pickaxeTier >= 2) { state.map[t.y][t.x] = 0; p.inventory.copper++; }
-            else if (tile === 9 && p.inventory.pickaxeTier >= 2) { state.map[t.y][t.x] = 0; p.inventory.gold++; }
-            else if (tile === 10 && p.inventory.pickaxeTier >= 2) { state.map[t.y][t.x] = 0; p.inventory.diamond++; }
+            else if (tile === 8 && p.inventory.pickaxeTier >= 2) { state.map[t.y][t.x] = 0; p.inventory.copper++; p.discovered.copper = true; }
+            else if (tile === 7 && p.inventory.pickaxeTier >= 2) { state.map[t.y][t.x] = 0; p.inventory.iron++; p.discovered.iron = true; }
+            else if (tile === 9 && p.inventory.pickaxeTier >= 4) { state.map[t.y][t.x] = 0; p.inventory.gold++; p.discovered.gold = true; } 
+            else if (tile === 10 && p.inventory.pickaxeTier >= 4) { state.map[t.y][t.x] = 0; p.inventory.diamond++; p.discovered.diamond = true; } 
         }
     });
 
@@ -92,9 +134,12 @@ export function mineBlock() {
     draw();
 }
 
-export function placeBlock() {
+export function placeBlock(material = 'wood') {
     const p = state.player;
-    if (p.inventory.wood <= 0) return;
+    
+    // Vorab prüfen, ob überhaupt genug Material da ist
+    if (material === 'wood' && p.inventory.wood <= 0) return;
+    if (material === 'stone' && p.inventory.stone <= 0) return;
     
     let targetX = p.x; 
     let targetY = p.y;
@@ -106,17 +151,28 @@ export function placeBlock() {
 
     if (targetX >= 0 && targetX < state.map[0].length && targetY >= 0 && targetY < state.map.length) {
         const t = state.map[targetY][targetX];
-        if (t === 2) { 
-            state.map[targetY][targetX] = 5; 
-            p.inventory.wood--; 
-            updateUI(); 
-            draw(); 
+        
+        if (material === 'wood') {
+            // Holz kann Brücken auf Wasser bauen (5) oder als Block auf Gras stehen (3)
+            if (t === 2) { 
+                state.map[targetY][targetX] = 5; 
+                p.inventory.wood--; 
+                updateUI(); draw(); 
+            } 
+            else if (t === 0) { 
+                state.map[targetY][targetX] = 3; 
+                p.inventory.wood--; 
+                updateUI(); draw(); 
+            }
         } 
-        else if (t === 0) { 
-            state.map[targetY][targetX] = 3; 
-            p.inventory.wood--; 
-            updateUI(); 
-            draw(); 
+        else if (material === 'stone') {
+            // NEU: t === 2 (Wasser) wurde hinzugefügt
+            // Stein kann auf Gras (0), Sand (4) oder ins Wasser (2) platziert werden
+            if (t === 0 || t === 4 || t === 2) { 
+                state.map[targetY][targetX] = 1; 
+                p.inventory.stone--; 
+                updateUI(); draw(); 
+            }
         }
     }
 }
