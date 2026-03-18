@@ -166,7 +166,7 @@ document.getElementById('downloadSaveBtn').addEventListener('click', () => {
 const uploadInput = document.getElementById('uploadSaveInput');
 
 document.getElementById('uploadSaveBtn').addEventListener('click', () => {
-    uploadInput.click(); // Triggert das versteckte Datei-Feld
+    uploadInput.click();
 });
 
 uploadInput.addEventListener('change', (e) => {
@@ -178,7 +178,7 @@ uploadInput.addEventListener('change', (e) => {
         try {
             const parsedData = JSON.parse(event.target.result);
             applySaveData(parsedData);
-            // Direkt auch in den LocalStorage schieben, damit es beim Reload bleibt
+            // Direkt auch in den LocalStorage schieben
             localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
             alert("Spielstand erfolgreich geladen!");
         } catch (err) {
