@@ -1,7 +1,7 @@
 // main.js
 import { state } from './state.js';
 import {
-    inventoryUI, updateUI, draw,
+    canvas, inventoryUI, updateUI, draw,
     craftWoodBtn, craftStoneBtn, craftCopperBtn,
     craftIronBtn, craftGoldBtn, craftDiamondBtn
 } from './renderer.js';
@@ -107,7 +107,7 @@ window.addEventListener('keydown', (e) => {
 
 function resizeCanvas() {
     canvas.width = window.innerWidth - 100;
-    canvas.height = window.innerHeight - 150;
+    canvas.height = window.innerHeight - 200;
     draw();
 }
 
@@ -115,6 +115,83 @@ window.addEventListener('resize', resizeCanvas);
 
 resizeCanvas();
 
-setInterval(spawnTrees, 3000);
 updateUI();
 draw();
+
+// --- SPEICHER-LOGIK (LocalStorage & JSON-File) ---
+
+const STORAGE_KEY = 'watchFromAbove_save';
+
+// Hilfsfunktion, um geladene Daten sicher in den aktuellen State zu übertragen
+function applySaveData(data) {
+    if (!data || !data.map || !data.player) return;
+    
+    state.map = data.map;
+    state.player = data.player;
+    state.worldOffsetX = data.worldOffsetX || 0;
+    state.worldOffsetY = data.worldOffsetY || 0;
+    
+    updateUI();
+    draw();
+}
+
+// 1. Beim Spielstart: Prüfen ob ein lokaler Speicherstand existiert
+const localSave = localStorage.getItem(STORAGE_KEY);
+if (localSave) {
+    try {
+        applySaveData(JSON.parse(localSave));
+        console.log("Lokaler Spielstand erfolgreich geladen.");
+    } catch (e) {
+        console.error("Fehler beim Lesen des LocalStorage:", e);
+    }
+}
+
+// 2. Auto-Save: Speichert das Spiel alle 3 Sekunden im Hintergrund
+setInterval(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}, 3000);
+
+// 3. JSON Download
+document.getElementById('downloadSaveBtn').addEventListener('click', () => {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state));
+    const dlAnchorElem = document.createElement('a');
+    dlAnchorElem.setAttribute("href", dataStr);
+    dlAnchorElem.setAttribute("download", "wafa_savegame.json");
+    document.body.appendChild(dlAnchorElem);
+    dlAnchorElem.click();
+    dlAnchorElem.remove();
+});
+
+// 4. JSON Upload
+const uploadInput = document.getElementById('uploadSaveInput');
+
+document.getElementById('uploadSaveBtn').addEventListener('click', () => {
+    uploadInput.click(); // Triggert das versteckte Datei-Feld
+});
+
+uploadInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        try {
+            const parsedData = JSON.parse(event.target.result);
+            applySaveData(parsedData);
+            // Direkt auch in den LocalStorage schieben, damit es beim Reload bleibt
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            alert("Spielstand erfolgreich geladen!");
+        } catch (err) {
+            alert("Fehler: Die JSON-Datei konnte nicht gelesen werden.");
+        }
+    };
+    reader.readAsText(file);
+});
+
+// 5. Spielstand löschen (Hard Reset)
+document.getElementById('resetSaveBtn').addEventListener('click', () => {
+    if(confirm("Möchtest du deinen Spielstand wirklich komplett löschen? Die Welt wird zurückgesetzt.")) {
+        localStorage.removeItem(STORAGE_KEY);
+        location.reload();
+    }
+});

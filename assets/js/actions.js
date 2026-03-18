@@ -166,7 +166,6 @@ export function placeBlock(material = 'wood') {
             }
         } 
         else if (material === 'stone') {
-            // NEU: t === 2 (Wasser) wurde hinzugefügt
             // Stein kann auf Gras (0), Sand (4) oder ins Wasser (2) platziert werden
             if (t === 0 || t === 4 || t === 2) { 
                 state.map[targetY][targetX] = 1; 

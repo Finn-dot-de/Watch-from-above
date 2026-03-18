@@ -77,3 +77,22 @@ button:disabled {
     color: #888;
     cursor: not-allowed;
 }
+
+/* Am Ende der style.css einfügen */
+.save-controls {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    width: 100%;
+    max-width: 980px; /* Gleiche Breite wie das Canvas */
+}
+
+.save-controls button {
+    margin-bottom: 0;
+}
+
+h1 {
+    color: #ecf0f1;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    margin-top: -20px;
+}
