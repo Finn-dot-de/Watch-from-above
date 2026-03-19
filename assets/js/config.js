@@ -13,5 +13,5 @@ export const COLORS = {
     7: '#d8d8d8', // Eisen
     8: '#b87333', // Kupfer
     9: '#ffd700', // Gold
-    10: '#b9f2ff' // Diamant
+    10: '#00d0ff' // Diamant
 };
