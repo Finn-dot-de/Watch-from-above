@@ -1,6 +1,6 @@
-// renderer.js
-import { TILE_SIZE, COLORS } from './config.js';
-import { state } from './state.js';
+// ui/renderer.js
+import { TILE_SIZE, COLORS } from '../core/config.js';
+import { state } from '../core/state.js';
 
 export const canvas = document.getElementById('gameCanvas');
 export const ctx = canvas.getContext('2d');

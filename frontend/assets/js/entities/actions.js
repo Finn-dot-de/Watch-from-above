@@ -1,12 +1,12 @@
-// actions.js
-import { state } from './state.js';
-import { expandMap, checkAndFixEdges } from './world.js';
-import { updateUI, draw } from './renderer.js';
+// entities/actions.js
+import { state } from '../core/state.js';
+import { expandMap, checkAndFixEdges } from '../world/map.js';
+import { updateUI, draw } from '../ui/renderer.js';
 
 export function canMoveTo(newX, newY) {
     if (newX < 0 || newX >= state.map[0].length || newY < 0 || newY >= state.map.length) return false;
     const t = state.map[newY][newX];
-    return !(t === 1 || t === 2 || t === 3 || t === 6 || t === 7 || t === 8 || t === 9 || t === 10);
+    return !(t === 1 || t === 3 || t === 6 || t === 7 || t === 8 || t === 9 || t === 10);
 }
 
 export function mineBlock() {

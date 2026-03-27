@@ -1,6 +1,6 @@
-// world.js
-import { state } from './state.js';
-import { draw } from './renderer.js';
+// world/map.js
+import { state } from '../core/state.js';
+import { draw } from '../ui/renderer.js';
 
 function getChunkHash(cx, cy) {
     let h = (cx * 374761393) ^ (cy * 668265263);

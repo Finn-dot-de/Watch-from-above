@@ -30,21 +30,10 @@ export const state = {
         color: '#ff5555',
         direction: 'down',
         inventory: {
-            wood: 0,
-            stone: 0,
-            iron: 0,
-            copper: 0,
-            gold: 0,
-            diamond: 0,
-            pickaxeTier: 0
+            wood: 0, stone: 0, iron: 0, copper: 0, gold: 0, diamond: 0, pickaxeTier: 0
         },
         discovered: {
-            wood: false,
-            stone: false,
-            iron: false,
-            copper: false,
-            gold: false,
-            diamond: false
+            wood: false, stone: false, iron: false, copper: false, gold: false, diamond: false
         },
         isInventoryOpen: false
     }
