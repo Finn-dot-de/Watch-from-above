@@ -14,8 +14,8 @@ export function initInput() {
         if (k in keys) keys[k] = true;
 
         if (e.key === 'e' || e.key === 'E') {
-            state.player.isInventoryOpen = !state.player.isInventoryOpen;
-            if (state.player.isInventoryOpen) {
+            state.ui.isInventoryOpen = !state.ui.isInventoryOpen;
+            if (state.ui.isInventoryOpen) {
                 updateUI();
                 inventoryUI.classList.remove('hidden');
             } else {
